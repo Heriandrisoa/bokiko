@@ -1,0 +1,12 @@
+<%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<c:set var="titleKey" value="import.title"/><c:set var="mainClass" value="wide"/>
+<%@ include file="_header.jspf" %>
+<fmt:message key="upload.uploading" var="tUploading"/><fmt:message key="upload.done" var="tDone"/><fmt:message key="upload.refresh" var="tRefresh"/><fmt:message key="upload.network" var="tNetwork"/><fmt:message key="books.error.notPdf" var="tNotPdf"/><fmt:message key="books.error.tooLarge" var="tTooLarge"/><fmt:message key="library.drop.title" var="tDropTitle"/><fmt:message key="library.drop.help" var="tDropHelp"/>
+<section id="importWorkspace" class="upload-page" aria-labelledby="import-title" data-upload-url="${ctx}/books/upload" data-csrf="<c:out value='${sessionScope.csrfToken}'/>" data-max-bytes="104857600" data-msg-uploading="<c:out value='${tUploading}'/>" data-msg-done="<c:out value='${tDone}'/>" data-msg-refresh="<c:out value='${tRefresh}'/>" data-msg-network="<c:out value='${tNetwork}'/>" data-msg-not-pdf="<c:out value='${tNotPdf}'/>" data-msg-too-large="<c:out value='${tTooLarge}'/>">
+  <div class="upload-page__head"><a class="back-link" href="${ctx}/home"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg><fmt:message key="reader.back"/></a><span class="eyebrow"><fmt:message key="app.kicker"/></span><h1 id="import-title"><fmt:message key="import.title"/></h1><p><fmt:message key="import.description"/></p></div>
+  <div id="dropZone" class="drop-zone upload-page__drop-zone" tabindex="0" role="button" aria-describedby="dropZoneHelp"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="m7 9 5-5 5 5"/><path d="M5 20h14"/></svg><span><strong><c:out value="${tDropTitle}"/></strong><span id="dropZoneHelp"><c:out value="${tDropHelp}"/></span></span></div>
+  <div class="upload-page__actions"><button type="button" id="importBtn" class="btn primary"><fmt:message key="import.choose"/></button><input type="file" id="fileInput" accept="application/pdf,.pdf" multiple hidden></div>
+  <div id="uploadStatus" class="upload-status" aria-live="polite"></div>
+</section>
+<script src="${ctx}/static/js/import.js" defer></script><%@ include file="_footer.jspf" %>
