@@ -1,6 +1,10 @@
 /* Reader-only controls and annotations. */
-.page-view { position: relative; width: max-content; margin: 0 auto; transition: opacity .16s ease, transform .16s ease; }
-.page-view.is-turning { opacity: .22; transform: translateY(4px); }
+.page-view { position: relative; width: max-content; margin: 0 auto; }
+.page-transition__outgoing { position: absolute; inset: 0 auto auto 0; z-index: 2; pointer-events: none; transform: translateY(var(--outgoing-offset, 0)); }
+.page-transition__outgoing.is-leaving { animation: page-out-forward .22s cubic-bezier(.2, .75, .25, 1) both; }
+.page-transition__outgoing[data-direction="backward"].is-leaving { animation-name: page-out-backward; }
+@keyframes page-out-forward { to { opacity: 0; transform: translateY(-18px); } }
+@keyframes page-out-backward { to { opacity: 0; transform: translateY(18px); } }
 .stage canvas { margin: 0; }
 .text-layer { position: absolute; inset: 0; overflow: hidden; opacity: .18; line-height: 1; text-size-adjust: none; }
 .text-layer span { position: absolute; color: transparent; cursor: text; transform-origin: 0 0; white-space: pre; }

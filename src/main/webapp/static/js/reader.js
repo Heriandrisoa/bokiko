@@ -32,6 +32,7 @@ let searchMatches = [];
 let searchPosition = -1;
 let searchToken = 0;
 let pendingScrollAnchor = null;
+let pendingTurnDirection = null;
 
 /* ---------- bookmarks and notes ---------- */
 const marksButton = document.createElement('button');
@@ -179,7 +180,8 @@ async function draw() {
       const target = anchor === 'bottom' ? Math.max(stage.scrollHeight - stage.clientHeight, 0) : 0;
       lastStageScrollTop = target;
       stage.scrollTop = target;
-      window.requestAnimationFrame(() => pageView.classList.remove('is-turning'));
+      const outgoing = pageView.querySelector('.page-transition__outgoing');
+      if (outgoing) window.requestAnimationFrame(() => outgoing.classList.add('is-leaving'));
     }
     rendering = false;
   }
@@ -210,13 +212,30 @@ function updateControls() {
   nextBtn.disabled = current >= total;
 }
 
+function preparePageTransition(direction) {
+  if (canvas.hidden || !canvas.width || !canvas.height) return;
+  pageView.querySelectorAll('.page-transition__outgoing').forEach((snapshot) => snapshot.remove());
+  const snapshot = document.createElement('canvas');
+  snapshot.className = 'page-transition__outgoing';
+  snapshot.width = canvas.width;
+  snapshot.height = canvas.height;
+  snapshot.style.width = canvas.style.width;
+  snapshot.style.height = canvas.style.height;
+  snapshot.dataset.direction = direction;
+  snapshot.getContext('2d').drawImage(canvas, 0, 0);
+  snapshot.addEventListener('animationend', () => snapshot.remove(), { once: true });
+  pageView.append(snapshot);
+}
+
 function goTo(n, scrollAnchor = 'top') {
   n = clamp(n);
   if (n === current) { updateControls(); return; }
+  const direction = n > current ? 'forward' : 'backward';
+  preparePageTransition(direction);
   current = n;
   updateControls();
   pendingScrollAnchor = scrollAnchor;
-  pageView.classList.add('is-turning');
+  pendingTurnDirection = direction;
   stage.scrollTop = 0;
   draw();
   scheduleSave();
