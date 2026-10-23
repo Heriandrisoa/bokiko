@@ -1,4 +1,6 @@
 /* Reader-only controls and annotations. */
+.reader-bar { position: sticky; top: var(--header-h); z-index: 9; flex: 0 0 auto; }
+.reader:fullscreen .reader-bar { top: 0; }
 .page-view { position: relative; width: max-content; margin: 0 auto; }
 .page-transition__outgoing { position: absolute; inset: 0 auto auto 0; z-index: 2; pointer-events: none; transform: translateY(var(--outgoing-offset, 0)); }
 .page-transition__outgoing.is-leaving { animation: page-out-forward .22s cubic-bezier(.2, .75, .25, 1) both; }
