@@ -8,6 +8,12 @@
 .reader-search { display: flex; align-items: center; gap: .25rem; }
 .reader-search input { width: 10.5rem; min-height: 34px; margin: 0; font-size: .75rem; }
 .search-status { min-width: 2.5rem; color: var(--color-text-muted); font-size: .7rem; text-align: center; }
+.reader-search { padding: .18rem; border: 1px solid var(--color-border-strong); border-radius: calc(var(--radius-sm) + 2px); background: var(--color-surface-muted); box-shadow: inset 0 1px 0 rgb(255 255 255 / .65); }
+.reader-search:focus-within { border-color: var(--color-accent); box-shadow: 0 0 0 3px rgb(147 70 54 / .13), inset 0 1px 0 rgb(255 255 255 / .65); }
+.reader-search input { width: 13.5rem; min-height: 32px; padding: 0 .55rem; border: 0; border-radius: 3px; background: var(--color-surface); box-shadow: none; color: var(--color-text); }
+.reader-search input:focus { box-shadow: none; }
+.reader-search .btn { min-width: 30px; padding: 0 .35rem; border-color: transparent; box-shadow: none; color: var(--color-text-muted); }
+.reader-search .btn:hover:not(:disabled) { border-color: var(--color-border-strong); background: var(--color-surface); color: var(--color-accent); box-shadow: none; }
 
 .marks-panel { position: absolute; z-index: 4; top: 4.6rem; right: 1rem; width: min(22rem, calc(100% - 2rem)); max-height: calc(100% - 6rem); overflow: auto; padding: 1rem; border: 1px solid var(--color-border-strong); background: var(--color-surface); box-shadow: 5px 5px 0 rgb(58 77 67 / .16); }
 .marks-panel__head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-bottom: .75rem; border-bottom: 1px solid var(--color-border); }
