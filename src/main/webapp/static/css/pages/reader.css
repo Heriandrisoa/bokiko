@@ -1,0 +1,27 @@
+/* Reader-only controls and annotations. */
+.page-view { position: relative; width: max-content; margin: 0 auto; }
+.stage canvas { margin: 0; }
+.text-layer { position: absolute; inset: 0; overflow: hidden; opacity: .18; line-height: 1; text-size-adjust: none; }
+.text-layer span { position: absolute; color: transparent; cursor: text; transform-origin: 0 0; white-space: pre; }
+.text-layer ::selection { background: rgb(147 70 54 / .42); }
+.text-layer .search-hit { background: rgb(240 197 78 / .68); border-radius: 2px; }
+.reader-search { display: flex; align-items: center; gap: .25rem; }
+.reader-search input { width: 10.5rem; min-height: 34px; margin: 0; font-size: .75rem; }
+.search-status { min-width: 2.5rem; color: var(--color-text-muted); font-size: .7rem; text-align: center; }
+
+.marks-panel { position: absolute; z-index: 4; top: 4.6rem; right: 1rem; width: min(22rem, calc(100% - 2rem)); max-height: calc(100% - 6rem); overflow: auto; padding: 1rem; border: 1px solid var(--color-border-strong); background: var(--color-surface); box-shadow: 5px 5px 0 rgb(58 77 67 / .16); }
+.marks-panel__head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-bottom: .75rem; border-bottom: 1px solid var(--color-border); }
+.marks-panel h2 { margin: 0; font-family: var(--font-display); font-size: 1.05rem; }
+.mark-form { display: grid; gap: .5rem; padding: 1rem 0; }
+.mark-form label { font-size: .75rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.mark-form textarea { min-height: 5.5rem; resize: vertical; padding: .65rem; border: 1px solid var(--color-border-strong); border-radius: var(--radius-sm); background: #fefffe; color: var(--color-text); font: inherit; }
+.mark-form textarea:focus { outline: 0; border-color: var(--color-accent); box-shadow: 0 0 0 3px rgb(147 70 54 / .13); }
+.mark-form .btn { justify-self: start; }
+.marks-list { display: grid; gap: .55rem; }
+.marks-empty { margin: .3rem 0; color: var(--color-text-muted); font-size: .85rem; }
+.mark-item { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: start; gap: .55rem; padding: .65rem 0; border-top: 1px solid var(--color-border); }
+.mark-item__page, .mark-item__remove { border: 0; background: transparent; color: var(--color-accent); cursor: pointer; font: inherit; font-weight: 800; }
+.mark-item__page { padding: 0; }.mark-item__remove { padding: 0 .2rem; font-size: 1.1rem; }
+.mark-item p { margin: 0; color: var(--color-text-muted); font-size: .8rem; line-height: 1.45; overflow-wrap: anywhere; }
+
+@media (max-width: 700px) { .reader-search { order: 6; width: 100%; }.reader-search input { flex: 1; width: auto; } }
