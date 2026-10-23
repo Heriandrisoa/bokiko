@@ -1,5 +1,6 @@
 /* Reader-only controls and annotations. */
-.page-view { position: relative; width: max-content; margin: 0 auto; }
+.page-view { position: relative; width: max-content; margin: 0 auto; transition: opacity .16s ease, transform .16s ease; }
+.page-view.is-turning { opacity: .22; transform: translateY(4px); }
 .stage canvas { margin: 0; }
 .text-layer { position: absolute; inset: 0; overflow: hidden; opacity: .18; line-height: 1; text-size-adjust: none; }
 .text-layer span { position: absolute; color: transparent; cursor: text; transform-origin: 0 0; white-space: pre; }

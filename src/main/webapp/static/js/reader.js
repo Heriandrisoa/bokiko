@@ -31,6 +31,7 @@ let queued = false;
 let searchMatches = [];
 let searchPosition = -1;
 let searchToken = 0;
+let pendingScrollAnchor = null;
 
 /* ---------- bookmarks and notes ---------- */
 const marksButton = document.createElement('button');
@@ -172,6 +173,14 @@ async function draw() {
   } catch (e) {
     console.error(e);
   } finally {
+    if (pendingScrollAnchor) {
+      const anchor = pendingScrollAnchor;
+      pendingScrollAnchor = null;
+      const target = anchor === 'bottom' ? Math.max(stage.scrollHeight - stage.clientHeight, 0) : 0;
+      lastStageScrollTop = target;
+      stage.scrollTop = target;
+      window.requestAnimationFrame(() => pageView.classList.remove('is-turning'));
+    }
     rendering = false;
   }
 }
@@ -201,11 +210,13 @@ function updateControls() {
   nextBtn.disabled = current >= total;
 }
 
-function goTo(n) {
+function goTo(n, scrollAnchor = 'top') {
   n = clamp(n);
   if (n === current) { updateControls(); return; }
   current = n;
   updateControls();
+  pendingScrollAnchor = scrollAnchor;
+  pageView.classList.add('is-turning');
   stage.scrollTop = 0;
   draw();
   scheduleSave();
@@ -349,20 +360,27 @@ stage.addEventListener('touchend', (e) => {
   if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) goTo(current + (dx < 0 ? 1 : -1));
 }, { passive: true });
 
-/* Continue naturally into the next page after a deliberate scroll to the bottom. */
+/* Continue naturally across page edges in either scroll direction. */
 let autoAdvanceLocked = false;
-function advanceAtBottom() {
-  if (!autoAdvance || autoAdvanceLocked || rendering || current >= total) return;
+let lastStageScrollTop = 0;
+function advanceAtEdge(direction) {
+  if (!autoAdvance || autoAdvanceLocked || rendering) return;
   if (stage.scrollHeight <= stage.clientHeight + 4) return;
   const atBottom = stage.scrollTop + stage.clientHeight >= stage.scrollHeight - 3;
-  if (!atBottom) return;
+  const atTop = stage.scrollTop <= 3;
+  if ((direction > 0 && (!atBottom || current >= total)) || (direction < 0 && (!atTop || current <= 1))) return;
   autoAdvanceLocked = true;
-  goTo(current + 1);
-  window.setTimeout(() => { autoAdvanceLocked = false; }, 350);
+  goTo(current + direction, direction > 0 ? 'top' : 'bottom');
+  window.setTimeout(() => { autoAdvanceLocked = false; }, 450);
 }
-stage.addEventListener('scroll', advanceAtBottom, { passive: true });
+stage.addEventListener('scroll', () => {
+  const direction = Math.sign(stage.scrollTop - lastStageScrollTop);
+  lastStageScrollTop = stage.scrollTop;
+  if (direction) advanceAtEdge(direction);
+}, { passive: true });
 stage.addEventListener('wheel', (event) => {
-  if (event.deltaY > 0) window.requestAnimationFrame(advanceAtBottom);
+  const direction = Math.sign(event.deltaY);
+  if (direction) window.requestAnimationFrame(() => advanceAtEdge(direction));
 }, { passive: true });
 
 let resizeTimer = null;
