@@ -50,18 +50,39 @@
     dropZone.classList.add('is-uploading');
     dropZone.setAttribute('aria-disabled', 'true');
     status.textContent = '';
-    let failed = 0;
+    const failedFiles = [];
+    let succeeded = 0;
     for (const file of files) {
       const state = addRow(file.name);
-      if (!/\.pdf$/i.test(file.name)) { setState(state, cfg.msgNotPdf, 'err'); failed++; continue; }
-      if (file.size > maxBytes) { setState(state, cfg.msgTooLarge, 'err'); failed++; continue; }
+      if (!/\.pdf$/i.test(file.name)) { setState(state, cfg.msgNotPdf, 'err'); failedFiles.push(file); continue; }
+      if (file.size > maxBytes) { setState(state, cfg.msgTooLarge, 'err'); failedFiles.push(file); continue; }
       setState(state, cfg.msgUploading + ' 0%');
-      if (!await uploadOne(file, state)) failed++;
+      if (await uploadOne(file, state)) succeeded++;
+      else failedFiles.push(file);
     }
     button.disabled = false;
     dropZone.classList.remove('is-uploading');
     dropZone.setAttribute('aria-disabled', 'false');
-    if (!failed) window.location.assign('home');
+    if (succeeded || failedFiles.length) showRecoveryActions(failedFiles);
+  }
+
+  function showRecoveryActions(failedFiles) {
+    const actions = document.createElement('div');
+    actions.className = 'upload-recovery';
+    if (failedFiles.length) {
+      const retry = document.createElement('button');
+      retry.type = 'button';
+      retry.className = 'btn';
+      retry.textContent = cfg.msgRetry;
+      retry.addEventListener('click', () => importFiles(failedFiles));
+      actions.appendChild(retry);
+    }
+    const library = document.createElement('a');
+    library.className = 'btn small';
+    library.href = 'home';
+    library.textContent = cfg.msgViewLibrary;
+    actions.appendChild(library);
+    status.appendChild(actions);
   }
   const openPicker = () => { if (!button.disabled) input.click(); };
   button.addEventListener('click', openPicker);

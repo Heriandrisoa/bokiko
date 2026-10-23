@@ -40,7 +40,7 @@ input:focus { box-shadow: 0 0 0 3px rgb(147 70 54 / .13); }
 .upload-page__head p { max-width: 35rem; margin: 0; color: var(--color-text-muted); font-size: 1rem; }
 .back-link { display: inline-flex; align-items: center; gap: .35rem; margin-bottom: 2rem; color: var(--color-text-muted); font-size: .7rem; font-weight: 800; letter-spacing: .1em; text-decoration: none; text-transform: uppercase; }
 .back-link:hover { color: var(--color-accent); }.back-link svg { width: 16px; height: 16px; }
-.upload-page__drop-zone { min-height: 300px; margin: 2rem 0 1rem; border-width: 2px; }.upload-page__drop-zone svg { width: 36px; height: 36px; }.upload-page__drop-zone strong { font-size: 1.4rem; }.upload-page__actions { display: flex; justify-content: center; }.upload-page .upload-status { margin-top: 1.25rem; }
+.upload-page__drop-zone { min-height: 300px; margin: 2rem 0 1rem; border-width: 2px; }.upload-page__drop-zone svg { width: 36px; height: 36px; }.upload-page__drop-zone strong { font-size: 1.4rem; }.upload-page__actions { display: flex; justify-content: center; }.upload-page .upload-status { margin-top: 1.25rem; }.upload-recovery { display: flex; justify-content: center; gap: .6rem; margin-top: 1rem; }
 
 @media (max-width: 700px) { .upload-page { padding-top: 0; }.upload-page__drop-zone { min-height: 240px; }.upload-page__head h1 { font-size: clamp(2.3rem, 13vw, 3.4rem); } }
 
