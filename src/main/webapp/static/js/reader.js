@@ -360,8 +360,12 @@ pageInput.addEventListener('change', () => {
 
 document.addEventListener('keydown', (e) => {
   if (e.target instanceof HTMLInputElement) return;
-  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === 'PageDown') { goTo(current + 1); e.preventDefault(); }
-  else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp') { goTo(current - 1); e.preventDefault(); }
+  if (e.key === 'ArrowRight' || e.key === 'PageDown') { goTo(current + 1); e.preventDefault(); }
+  else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { goTo(current - 1); e.preventDefault(); }
+  else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+    stage.scrollBy({ top: (e.key === 'ArrowDown' ? 1 : -1) * 80, behavior: 'smooth' });
+    e.preventDefault();
+  }
   else if (e.key === 'Home') { goTo(1); e.preventDefault(); }
   else if (e.key === 'End') { goTo(total); e.preventDefault(); }
 });

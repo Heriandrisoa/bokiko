@@ -13,7 +13,7 @@ import java.util.Map;
 public class LangServlet extends HttpServlet {
     // whitelist => no open redirect
     private static final Map<String, String> NEXT =
-            Map.of("login", "/login", "register", "/register", "home", "/home");
+            Map.of("login", "/login", "register", "/register", "home", "/home", "settings", "/settings", "import", "/import");
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {

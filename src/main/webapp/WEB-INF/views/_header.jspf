@@ -1,25 +1,108 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <fmt:setLocale value="${lang}"/><fmt:setBundle basename="i18n.messages"/><c:set var="ctx" value="${pageContext.request.contextPath}"/>
-<!DOCTYPE html><html lang="${lang}"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<!DOCTYPE html>
+<html lang="${lang}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title><c:choose><c:when test="${not empty rawTitle}"><c:out value="${rawTitle}"/></c:when><c:otherwise><fmt:message key="${titleKey}"/></c:otherwise></c:choose> &middot; <fmt:message key="app.title"/></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="${ctx}/static/css/app.css">
-  <link rel="stylesheet" href="${ctx}/static/css/cool-theme.css"></head><body>
-<header class="app">
+  <link rel="stylesheet" href="${ctx}/static/css/cool-theme.css">
+  <script src="${ctx}/static/js/theme.js"></script>
+</head>
+<body>
+<header class="app-header">
   <div class="app-header__inner">
     <a class="brand" href="${ctx}/home" aria-label="<fmt:message key='app.title'/>">
-      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg></span>
-      <span class="brand-copy"><span class="brand-kicker"><fmt:message key="app.kicker"/></span><span class="brand-name"><fmt:message key="app.title"/></span></span>
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/>
+        </svg>
+      </span>
+      <span class="brand-copy">
+        <span class="brand-name"><fmt:message key="app.title"/></span>
+        <span class="brand-kicker"><fmt:message key="app.kicker"/></span>
+      </span>
     </a>
+
     <c:if test="${not empty sessionScope.userId}">
       <nav class="primary-nav" aria-label="<fmt:message key='nav.primary'/>">
-        <a href="${ctx}/home" class="nav-link ${currentPage == 'home' ? 'is-active' : ''}"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg><span><fmt:message key="nav.library"/></span></a>
+        <a href="${ctx}/home" class="nav-link ${currentPage == 'home' ? 'is-active' : ''}">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/>
+          </svg>
+          <span><fmt:message key="nav.library"/></span>
+        </a>
+        <a href="${ctx}/import" class="nav-link ${currentPage == 'import' ? 'is-active' : ''}">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3v12"/>
+            <path d="m7 10 5 5 5-5"/>
+            <path d="M5 21h14"/>
+          </svg>
+          <span><fmt:message key="library.import"/></span>
+        </a>
+        <a href="${ctx}/settings" class="nav-link ${currentPage == 'settings' ? 'is-active' : ''}">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+          <span><fmt:message key="nav.settings"/></span>
+        </a>
       </nav>
     </c:if>
+
     <div class="app-actions">
-      <c:if test="${not empty sessionScope.username}"><fmt:message key="home.greeting" var="greeting"><fmt:param value="${sessionScope.username}"/></fmt:message><span class="greeting"><c:out value="${greeting}"/></span></c:if>
-      <form class="language-form" method="get" action="${ctx}/lang"><input type="hidden" name="next" value="${currentPage}"><c:if test="${currentPage == 'read'}"><input type="hidden" name="id" value="${book.id}"></c:if><label for="lang"><fmt:message key="nav.language"/></label><select id="lang" name="lang" onchange="this.form.submit()"><option value="fr" ${lang == 'fr' ? 'selected' : ''}>Fran&ccedil;ais</option><option value="en" ${lang == 'en' ? 'selected' : ''}>English</option><option value="mg" ${lang == 'mg' ? 'selected' : ''}>Malagasy</option></select><noscript><button type="submit" class="btn small">OK</button></noscript></form>
-      <c:if test="${not empty sessionScope.userId}"><form method="post" action="${ctx}/logout"><input type="hidden" name="csrf" value="<c:out value='${sessionScope.csrfToken}'/>"><button type="submit" class="btn small"><fmt:message key="nav.logout"/></button></form></c:if>
+      <c:if test="${not empty sessionScope.username}">
+        <div class="user-pill" title="<fmt:message key='home.greeting'><fmt:param value='${sessionScope.username}'/></fmt:message>">
+          <span class="user-avatar" aria-hidden="true">${sessionScope.username.substring(0, 1).toUpperCase()}</span>
+          <span class="user-name"><c:out value="${sessionScope.username}"/></span>
+        </div>
+      </c:if>
+
+      <form class="language-form" method="get" action="${ctx}/lang">
+        <input type="hidden" name="next" value="${currentPage}">
+        <c:if test="${currentPage == 'read'}">
+          <input type="hidden" name="id" value="${book.id}">
+        </c:if>
+        <label for="lang" class="sr"><fmt:message key="nav.language"/></label>
+        <div class="select-wrapper">
+          <svg class="select-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="2" y1="12" x2="22" y2="12"/>
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+          </svg>
+          <select id="lang" name="lang" onchange="this.form.submit()">
+            <option value="fr" ${lang == 'fr' ? 'selected' : ''}>FR</option>
+            <option value="en" ${lang == 'en' ? 'selected' : ''}>EN</option>
+            <option value="mg" ${lang == 'mg' ? 'selected' : ''}>MG</option>
+          </select>
+          <svg class="select-chevron" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </div>
+        <noscript><button type="submit" class="btn btn-sm">OK</button></noscript>
+      </form>
+
+      <c:if test="${not empty sessionScope.userId}">
+        <form method="post" action="${ctx}/logout" class="logout-form">
+          <input type="hidden" name="csrf" value="<c:out value='${sessionScope.csrfToken}'/>">
+          <button type="submit" class="btn btn-ghost btn-sm btn-logout" title="<fmt:message key='nav.logout'/>">
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+              <polyline points="16 17 21 12 16 7"/>
+              <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+            <span class="logout-text"><fmt:message key="nav.logout"/></span>
+          </button>
+        </form>
+      </c:if>
     </div>
   </div>
-</header><main class="${mainClass}">
+</header>
+<main class="${mainClass}">
