@@ -39,6 +39,28 @@ marksButton.className = 'btn small';
 marksButton.textContent = readerMessages.marks;
 marksButton.setAttribute('aria-expanded', 'false');
 
+const AUTO_ADVANCE_KEY = 'bokiko.reader.autoAdvance';
+let autoAdvance = true;
+try { autoAdvance = localStorage.getItem(AUTO_ADVANCE_KEY) !== 'false'; } catch (_) { /* storage can be unavailable */ }
+const autoAdvanceButton = document.createElement('button');
+autoAdvanceButton.type = 'button';
+autoAdvanceButton.className = 'btn small reader-auto-advance';
+
+function updateAutoAdvanceButton() {
+  const label = autoAdvance ? readerMessages.autoAdvanceOn : readerMessages.autoAdvanceOff;
+  autoAdvanceButton.textContent = label;
+  autoAdvanceButton.title = readerMessages.autoAdvance;
+  autoAdvanceButton.setAttribute('aria-label', readerMessages.autoAdvance);
+  autoAdvanceButton.setAttribute('aria-pressed', String(autoAdvance));
+}
+
+autoAdvanceButton.addEventListener('click', () => {
+  autoAdvance = !autoAdvance;
+  try { localStorage.setItem(AUTO_ADVANCE_KEY, String(autoAdvance)); } catch (_) { /* preference remains for this reader */ }
+  updateAutoAdvanceButton();
+});
+updateAutoAdvanceButton();
+
 const marksPanel = document.createElement('aside');
 marksPanel.className = 'marks-panel';
 marksPanel.hidden = true;
@@ -51,6 +73,7 @@ marksPanel.querySelector('label').textContent = readerMessages.note;
 marksPanel.querySelector('textarea').placeholder = readerMessages.notePlaceholder;
 marksPanel.querySelector('form button').textContent = readerMessages.addMark;
 root.append(marksPanel);
+document.querySelector('.reader-zoom').insertBefore(autoAdvanceButton, fullscreenBtn);
 document.querySelector('.reader-zoom').insertBefore(marksButton, fullscreenBtn);
 
 const marksList = marksPanel.querySelector('.marks-list');
@@ -324,6 +347,22 @@ stage.addEventListener('touchend', (e) => {
   const dx = e.changedTouches[0].clientX - tx;
   const dy = e.changedTouches[0].clientY - ty;
   if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) goTo(current + (dx < 0 ? 1 : -1));
+}, { passive: true });
+
+/* Continue naturally into the next page after a deliberate scroll to the bottom. */
+let autoAdvanceLocked = false;
+function advanceAtBottom() {
+  if (!autoAdvance || autoAdvanceLocked || rendering || current >= total) return;
+  if (stage.scrollHeight <= stage.clientHeight + 4) return;
+  const atBottom = stage.scrollTop + stage.clientHeight >= stage.scrollHeight - 3;
+  if (!atBottom) return;
+  autoAdvanceLocked = true;
+  goTo(current + 1);
+  window.setTimeout(() => { autoAdvanceLocked = false; }, 350);
+}
+stage.addEventListener('scroll', advanceAtBottom, { passive: true });
+stage.addEventListener('wheel', (event) => {
+  if (event.deltaY > 0) window.requestAnimationFrame(advanceAtBottom);
 }, { passive: true });
 
 let resizeTimer = null;

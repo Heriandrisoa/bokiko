@@ -14,6 +14,7 @@
 .reader-search input:focus { box-shadow: none; }
 .reader-search .btn { min-width: 30px; padding: 0 .35rem; border-color: transparent; box-shadow: none; color: var(--color-text-muted); }
 .reader-search .btn:hover:not(:disabled) { border-color: var(--color-border-strong); background: var(--color-surface); color: var(--color-accent); box-shadow: none; }
+.reader-auto-advance[aria-pressed="true"] { border-color: var(--color-accent); background: var(--color-surface-muted); color: var(--color-accent); }
 
 .marks-panel { position: absolute; z-index: 4; top: 4.6rem; right: 1rem; width: min(22rem, calc(100% - 2rem)); max-height: calc(100% - 6rem); overflow: auto; padding: 1rem; border: 1px solid var(--color-border-strong); background: var(--color-surface); box-shadow: 5px 5px 0 rgb(58 77 67 / .16); }
 .marks-panel__head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-bottom: .75rem; border-bottom: 1px solid var(--color-border); }
