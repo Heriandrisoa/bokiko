@@ -8,11 +8,16 @@ const cfg = root.dataset;
 const stage = document.getElementById('stage');
 const canvas = document.getElementById('canvas');
 const g = canvas.getContext('2d');
+const textLayer = document.getElementById('textLayer');
 const statusEl = document.getElementById('status');
 const pageInput = document.getElementById('pageInput');
 const prevBtn = document.getElementById('prevBtn');
 const nextBtn = document.getElementById('nextBtn');
 const fullscreenBtn = document.getElementById('fullscreenBtn');
+const searchInput = document.getElementById('searchInput');
+const searchPrevBtn = document.getElementById('searchPrevBtn');
+const searchNextBtn = document.getElementById('searchNextBtn');
+const searchStatus = document.getElementById('searchStatus');
 
 let pdf = null;
 let total = 0;
@@ -22,6 +27,9 @@ let customScale = 1;
 let lastScale = 1;
 let rendering = false;
 let queued = false;
+let searchMatches = [];
+let searchPosition = -1;
+let searchToken = 0;
 
 const clamp = (n) => Math.min(Math.max(n, 1), total || 1);
 
@@ -54,6 +62,7 @@ async function draw() {
         viewport,
         transform: dpr !== 1 ? [dpr, 0, 0, dpr, 0, 0] : null,
       }).promise;
+      await renderTextLayer(page, viewport);
       canvas.hidden = false;
     } while (queued);
   } catch (e) {
@@ -61,6 +70,25 @@ async function draw() {
   } finally {
     rendering = false;
   }
+}
+
+async function renderTextLayer(page, viewport) {
+  textLayer.replaceChildren();
+  const layer = new pdfjsLib.TextLayer({
+    textContentSource: await page.getTextContent(),
+    container: textLayer,
+    viewport,
+  });
+  await layer.render();
+  highlightSearchTerms();
+}
+
+function highlightSearchTerms() {
+  const query = searchInput.value.trim().toLocaleLowerCase();
+  if (!query) return;
+  textLayer.querySelectorAll('span').forEach((span) => {
+    if (span.textContent.toLocaleLowerCase().includes(query)) span.classList.add('search-hit');
+  });
 }
 
 function updateControls() {
@@ -122,6 +150,53 @@ document.getElementById('zoomInBtn').addEventListener('click', () => zoom(1.2));
 document.getElementById('zoomOutBtn').addEventListener('click', () => zoom(1 / 1.2));
 document.getElementById('fitWidthBtn').addEventListener('click', () => { mode = 'width'; draw(); });
 document.getElementById('fitPageBtn').addEventListener('click', () => { mode = 'page'; draw(); });
+
+async function searchDocument(direction = 1) {
+  const query = searchInput.value.trim().toLocaleLowerCase();
+  if (!query || !pdf) {
+    searchMatches = [];
+    searchPosition = -1;
+    searchStatus.textContent = '';
+    draw();
+    return;
+  }
+  const token = ++searchToken;
+  searchStatus.textContent = '…';
+  const matches = [];
+  for (let pageNumber = 1; pageNumber <= total; pageNumber++) {
+    const page = await pdf.getPage(pageNumber);
+    const content = await page.getTextContent();
+    const text = content.items.map((item) => item.str).join(' ').toLocaleLowerCase();
+    if (text.includes(query)) matches.push(pageNumber);
+    if (token !== searchToken) return;
+  }
+  searchMatches = matches;
+  if (!matches.length) {
+    searchPosition = -1;
+    searchStatus.textContent = '0';
+    draw();
+    return;
+  }
+  const currentIndex = matches.indexOf(current);
+  searchPosition = currentIndex >= 0 ? currentIndex : (direction > 0 ? 0 : matches.length - 1);
+  searchStatus.textContent = `${searchPosition + 1}/${matches.length}`;
+  goTo(matches[searchPosition]);
+}
+
+function moveSearch(direction) {
+  if (!searchMatches.length) return searchDocument(direction);
+  searchPosition = (searchPosition + direction + searchMatches.length) % searchMatches.length;
+  searchStatus.textContent = `${searchPosition + 1}/${searchMatches.length}`;
+  goTo(searchMatches[searchPosition]);
+}
+
+searchInput.addEventListener('change', () => searchDocument(1));
+searchInput.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter') { event.preventDefault(); searchDocument(event.shiftKey ? -1 : 1); }
+  if (event.key === 'Escape') { searchInput.value = ''; searchDocument(); searchInput.blur(); }
+});
+searchNextBtn.addEventListener('click', () => moveSearch(1));
+searchPrevBtn.addEventListener('click', () => moveSearch(-1));
 
 function updateFullscreenControl() {
   const active = document.fullscreenElement === root;
