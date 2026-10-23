@@ -1,40 +1,61 @@
 # Book Reader
 
-A Jakarta EE 10 (Servlet 6.0 / JSP 3.1) web application: register, sign in, upload PDFs, and read them
-in the browser with PDF.js. Books and reading progress are stored per user in PostgreSQL.
+<p align="center">
+	<strong>A calm home for your docs.</strong><br>
+	Upload your books, pick up where you left off, and read in the browser, anywhere, anytime.
+</p>
 
-## Repository history
+<p align="center">
+	<img alt="Java 17" src="https://img.shields.io/badge/Java-17-orange?logo=openjdk&logoColor=white">
+	<img alt="Jakarta EE 10" src="https://img.shields.io/badge/Jakarta%20EE-10-2c6b9a">
+	<img alt="PDF.js" src="https://img.shields.io/badge/Reader-PDF.js-f04b37">
+	<img alt="PostgreSQL" src="https://img.shields.io/badge/Database-PostgreSQL-4169e1?logo=postgresql&logoColor=white">
+</p>
 
-This repository was initialized from a recovered working copy after its prior Git metadata was unavailable.
-The first commit is therefore an import snapshot; subsequent changes are recorded as ordinary, atomic commits.
+Book Reader is a self-hosted PDF library built with Jakarta EE. Each account has its own collection and saved reading progress, with a focused PDF.js reader for searching, zooming, bookmarking, and taking notes.
 
-## Requirements
+## What You Get
+
+| Library | Reader |
+| --- | --- |
+| Account-based book collections | Searchable PDF text and page navigation |
+| PDF upload and organization | Fit-to-width, fit-to-page, and custom zoom |
+| Per-book reading progress | Bookmarks with notes |
+| English, French, and Malagasy UI | Scroll-to-advance and touch page turns |
+
+## Stack
+
+- Java 17, Jakarta EE 10, Servlet 6.0, and JSP 3.1
+- PostgreSQL for accounts, books, and reading progress
+- PDF.js for in-browser rendering
+- Maven and Jetty 12 for local development; deployable as a WAR
+
+## Quick Start
+
+### Requirements
 
 - JDK 17 or newer
 - Maven 3.9 or newer
 - PostgreSQL 14 or newer
 
-## 1. Create the database
+### 1. Create the database
 
-Connect to PostgreSQL as a superuser and run:
+Connect to PostgreSQL as a superuser and create the application role and database:
 
 ```sql
 CREATE ROLE jee_user LOGIN PASSWORD 'change_me';
 CREATE DATABASE jee_auth OWNER jee_user;
 ```
 
-Then create the tables (safe to run more than once):
+Create the tables from the project directory:
 
-```bash
+```powershell
 psql -U jee_user -d jee_auth -f sql/schema.sql
 ```
 
-On Windows, `psql` is usually at `C:\Program Files\PostgreSQL\<version>\bin\psql.exe`
-(or `E:\postgresql\bin\psql.exe` on this machine).
+### 2. Configure the application
 
-## 2. Configure the application
-
-Defaults live in `src/main/resources/db.properties`:
+Set values in `src/main/resources/db.properties`:
 
 ```properties
 url=jdbc:postgresql://localhost:5432/jee_auth
@@ -43,66 +64,50 @@ password=change_me
 books.dir=C:/jee-auth-data/books
 ```
 
-Any value can be overridden with an environment variable, which takes precedence:
+Environment variables override the corresponding properties:
 
-| Property    | Environment variable |
-| ----------- | -------------------- |
-| `url`       | `DB_URL`             |
-| `user`      | `DB_USER`            |
-| `password`  | `DB_PASSWORD`        |
-| `books.dir` | `BOOKS_DIR`          |
+| Property | Environment variable |
+| --- | --- |
+| `url` | `DB_URL` |
+| `user` | `DB_USER` |
+| `password` | `DB_PASSWORD` |
+| `books.dir` | `BOOKS_DIR` |
 
-## 3. Run it
+### 3. Run locally
 
-Run Maven **from the project directory** (the directory containing `pom.xml`):
+From the directory containing `pom.xml`:
 
 ```powershell
-cd D:\eclispse-workspace\book-reader
 mvn jetty:run
 ```
 
-Open <http://localhost:8080/>.
+Open [http://localhost:8080](http://localhost:8080). You can also start the app with `run.cmd` on Windows. Stop the server with `Ctrl+C`.
 
-If you run Maven from another directory, you will get
-`No plugin found for prefix 'jetty'`. In that case, point Maven at the POM or use the launcher script:
-
-```powershell
-# Option 1: explicit POM
-mvn -f D:\eclispse-workspace\book-reader\pom.xml jetty:run
-
-# Option 2: no prefix resolution, works from any directory
-mvn -f D:\eclispse-workspace\book-reader\pom.xml org.eclipse.jetty.ee10:jetty-ee10-maven-plugin:12.0.40:run
-
-# Option 3: launcher script
-D:\eclispse-workspace\book-reader\run.cmd
-```
-
-Stop with `Ctrl+C`. To use another port:
+To use a different port:
 
 ```powershell
 mvn jetty:run -Djetty.http.port=9090
-# or
-.\run.cmd -Djetty.http.port=9090
 ```
 
-The Jetty plugin compiles the sources and serves `src/main/webapp` directly, so Java/JSP/CSS/JS changes
-are picked up without rebuilding the WAR.
+Jetty serves `src/main/webapp` directly, so application changes do not require rebuilding the WAR.
 
-## 4. Build a deployable WAR
+## Build For Deployment
 
 ```bash
 mvn clean package
 ```
 
-This produces `target/jee-auth.war`, which can be deployed to Tomcat 10.1 or newer (Tomcat 11 works too).
-JSTL is bundled in the WAR because Tomcat does not ship it.
+The WAR is written to `target/jee-auth.war` and can be deployed to Tomcat 10.1 or newer. JSTL is bundled because Tomcat does not include it.
 
-## Project layout
+## Project Map
 
-```
-src/main/java/          Servlets, filters, DAOs, services
-src/main/resources/     db.properties and i18n message bundles
-src/main/webapp/        JSP views, CSS, JS, bundled PDF.js
-src/main/webapp/WEB-INF/web.xml
+```text
+src/main/java/          Servlets, filters, DAOs, and services
+src/main/resources/     Database defaults and translations
+src/main/webapp/        JSP views, styles, scripts, and PDF.js
 sql/schema.sql          PostgreSQL schema
 ```
+
+## Repository History
+
+This repository was initialized from a recovered working copy after its prior Git metadata was unavailable. The first commit is an import snapshot; subsequent changes are recorded as ordinary, atomic commits.
