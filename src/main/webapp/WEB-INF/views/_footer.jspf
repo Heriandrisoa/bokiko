@@ -1,0 +1,1 @@
+</main><c:if test="${mainClass != 'reader-page'}"><footer class="site-footer"><div class="container site-footer__inner"><span class="site-footer__brand"><span class="site-footer__mark" aria-hidden="true"></span><fmt:message key="app.title"/></span><span>&copy; <fmt:message key="app.title"/></span></div></footer></c:if></body></html>
