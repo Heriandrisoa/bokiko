@@ -25,3 +25,13 @@ CREATE TABLE IF NOT EXISTS books (
     UNIQUE (user_id, sha256)                   -- blocks duplicate imports
 );
 CREATE INDEX IF NOT EXISTS books_user_idx ON books (user_id);
+
+CREATE TABLE IF NOT EXISTS book_marks (
+    id         BIGSERIAL PRIMARY KEY,
+    book_id    BIGINT      NOT NULL REFERENCES books(id) ON DELETE CASCADE,
+    user_id    BIGINT      NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    page       INT         NOT NULL CHECK (page > 0),
+    note       VARCHAR(500) NOT NULL DEFAULT '',
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS book_marks_book_user_idx ON book_marks (book_id, user_id, created_at DESC);

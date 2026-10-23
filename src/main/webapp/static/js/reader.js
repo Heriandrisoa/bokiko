@@ -18,6 +18,7 @@ const searchInput = document.getElementById('searchInput');
 const searchPrevBtn = document.getElementById('searchPrevBtn');
 const searchNextBtn = document.getElementById('searchNextBtn');
 const searchStatus = document.getElementById('searchStatus');
+const readerMessages = document.getElementById('readerMessages').dataset;
 
 let pdf = null;
 let total = 0;
@@ -30,6 +31,86 @@ let queued = false;
 let searchMatches = [];
 let searchPosition = -1;
 let searchToken = 0;
+
+/* ---------- bookmarks and notes ---------- */
+const marksButton = document.createElement('button');
+marksButton.type = 'button';
+marksButton.className = 'btn small';
+marksButton.textContent = readerMessages.marks;
+marksButton.setAttribute('aria-expanded', 'false');
+
+const marksPanel = document.createElement('aside');
+marksPanel.className = 'marks-panel';
+marksPanel.hidden = true;
+marksPanel.setAttribute('aria-label', readerMessages.marks);
+marksPanel.innerHTML = '<div class="marks-panel__head"><h2></h2><button type="button" class="btn small icon-only" aria-label="Close">×</button></div>'
+  + '<form class="mark-form"><label for="markNote"></label><textarea id="markNote" name="note" maxlength="500"></textarea><button type="submit" class="btn primary small"></button></form>'
+  + '<div class="marks-list" aria-live="polite"></div>';
+marksPanel.querySelector('h2').textContent = readerMessages.marks;
+marksPanel.querySelector('label').textContent = readerMessages.note;
+marksPanel.querySelector('textarea').placeholder = readerMessages.notePlaceholder;
+marksPanel.querySelector('form button').textContent = readerMessages.addMark;
+root.append(marksPanel);
+document.querySelector('.reader-zoom').insertBefore(marksButton, fullscreenBtn);
+
+const marksList = marksPanel.querySelector('.marks-list');
+const markForm = marksPanel.querySelector('.mark-form');
+const markNote = marksPanel.querySelector('textarea');
+
+function toggleMarks(show) {
+  marksPanel.hidden = !show;
+  marksButton.setAttribute('aria-expanded', String(show));
+  if (show) markNote.focus();
+}
+
+function renderMarks(marks) {
+  marksList.replaceChildren();
+  if (!marks.length) {
+    const empty = document.createElement('p');
+    empty.className = 'marks-empty';
+    empty.textContent = cfg.msgEmptyMarks;
+    marksList.append(empty);
+    return;
+  }
+  marks.forEach((mark) => {
+    const item = document.createElement('article');
+    item.className = 'mark-item';
+    const jump = document.createElement('button');
+    jump.type = 'button'; jump.className = 'mark-item__page'; jump.textContent = `p. ${mark.page}`;
+    jump.addEventListener('click', () => { goTo(mark.page); toggleMarks(false); });
+    const note = document.createElement('p'); note.textContent = mark.note || '—';
+    const remove = document.createElement('button');
+    remove.type = 'button'; remove.className = 'mark-item__remove'; remove.textContent = '×';
+    remove.setAttribute('aria-label', cfg.msgRemoveMark);
+    remove.addEventListener('click', () => removeMark(mark.id));
+    item.append(jump, note, remove); marksList.append(item);
+  });
+}
+
+async function loadMarks() {
+  try {
+    const response = await fetch(`${cfg.marksUrl}?bookId=${encodeURIComponent(cfg.bookId)}`, { headers: { Accept: 'application/json' } });
+    if (response.ok) renderMarks(await response.json());
+  } catch (error) { console.error('Unable to load bookmarks.', error); }
+}
+
+async function removeMark(id) {
+  try {
+    const response = await fetch(`${cfg.marksUrl}?bookId=${encodeURIComponent(cfg.bookId)}&id=${encodeURIComponent(id)}`, { method: 'DELETE', headers: { 'X-CSRF-Token': cfg.csrf } });
+    if (response.ok) loadMarks();
+  } catch (error) { console.error('Unable to remove bookmark.', error); }
+}
+
+marksButton.addEventListener('click', () => toggleMarks(marksPanel.hidden));
+marksPanel.querySelector('.marks-panel__head button').addEventListener('click', () => toggleMarks(false));
+markForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const body = new URLSearchParams({ bookId: cfg.bookId, page: String(current), note: markNote.value });
+  try {
+    const response = await fetch(cfg.marksUrl, { method: 'POST', headers: { 'X-CSRF-Token': cfg.csrf, 'Content-Type': 'application/x-www-form-urlencoded' }, body });
+    if (response.ok) { markNote.value = ''; loadMarks(); }
+  } catch (error) { console.error('Unable to save bookmark.', error); }
+});
 
 const clamp = (n) => Math.min(Math.max(n, 1), total || 1);
 
@@ -269,6 +350,7 @@ if (!document.fullscreenEnabled) fullscreenBtn.hidden = true;
     document.getElementById('pageTotal').textContent = total;
     statusEl.hidden = true;
     updateControls();
+    loadMarks();
     await draw();
   } catch (e) {
     console.error(e);
